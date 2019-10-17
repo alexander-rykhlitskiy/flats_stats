@@ -12,6 +12,16 @@ docker build -t flats_stats .
 docker run -v $(pwd):/app -it --rm -p 8501:8501 flats_stats
 ```
 
+#### Run in "production"
+```bash
+docker run -d --restart always -v $(pwd):/app -it -p 8501:8501 flats_stats
+```
+Add to `.streamlit/config.toml`
+```
+[browser]
+
+serverAddress = "berlog.ga"
+```
 ### Connect to streamlit container or run custom script
 ```bash
 docker exec -it $(docker ps | grep flats_stats | awk '{print $1}') /bin/bash

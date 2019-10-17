@@ -75,3 +75,5 @@ st.write(filtered_data[['price', 'rooms_number', 'lat', 'lon']].describe())
 
 st.subheader('Raw data')
 st.write(filtered_data)
+
+st.write(f'More details here https://github.com/alexander-rykhlitskiy/flats_stats')
