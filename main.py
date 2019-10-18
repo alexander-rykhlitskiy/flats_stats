@@ -6,7 +6,7 @@ st.title('Flats stats')
 
 DATA_PATH = 'flats.csv'
 ROOMS_NUMBER_COLUMN = 'rooms_number'
-DATE_COLUMN = 'updated_at'
+CREATED_AT_COLUMN = 'created_at'
 LAT_COLUMN = 'lat'
 LON_COLUMN = 'lon'
 
@@ -17,16 +17,21 @@ def remove_blank(data, column_name):
 @st.cache
 def load_data(nrows):
     data = pd.read_csv(DATA_PATH, nrows=nrows)
-    data[DATE_COLUMN] = pd.to_datetime(data[DATE_COLUMN])
+    data[CREATED_AT_COLUMN] = pd.to_datetime(data[CREATED_AT_COLUMN])
     remove_blank(data, LAT_COLUMN)
     remove_blank(data, LON_COLUMN)
     remove_blank(data, ROOMS_NUMBER_COLUMN)
-    # Central belarus borders
+    # Central Belarus borders
     data = data[(data.lat < 54.0) & (data.lat > 53.8) & (data.lon > 27.3) & (data.lon < 27.7)]
     data = data[(data.price < 2000) & (data.price > 50)]
+
+    # data.groupby(by='address')['address'].size().sort_values().tail(2).index.values # >>> ['Минск', 'Минск, ']
+    incomplete_addresses = "['Минск', 'Минск, ']"
+    data = data.query(f"address not in {incomplete_addresses}")
+    data = data.query("agent != 't'")
     return data
 
-data = load_data(10000)
+data = load_data(100000)
 
 select_values = list(map(str, range(0, int(data[ROOMS_NUMBER_COLUMN].max()))))
 rooms_to_filter = st.multiselect('Rooms number', select_values, default=select_values)
@@ -37,7 +42,7 @@ st.write(f'{len(filtered_data)} flats analyzed')
 
 st.subheader('Number of newly added for rent flats by hour')
 hist_values = np.histogram(
-    filtered_data[DATE_COLUMN].dt.hour, bins=24, range=(0,24))[0]
+    filtered_data[CREATED_AT_COLUMN].dt.hour, bins=24, range=(0,24))[0]
 st.bar_chart(hist_values)
 
 minsk_map_options = {
@@ -73,7 +78,7 @@ st.deck_gl_chart(viewport=minsk_map_options,
 st.subheader('Some analysis')
 st.write(filtered_data[['price', 'rooms_number', 'lat', 'lon']].describe())
 
-st.subheader('Raw data')
-st.write(filtered_data)
+# st.subheader('Raw data')
+# st.write(filtered_data)
 
 st.write(f'More details here https://github.com/alexander-rykhlitskiy/flats_stats')

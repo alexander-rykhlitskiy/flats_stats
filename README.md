@@ -2,7 +2,7 @@
 
 ### Export flats to csv
 ```bash
-psql -U postgres -d gethataby_development -c "COPY (SELECT id, price, rooms_number, updated_at, coords[0] as lat, coords[1] as lon, agent from flats) to '/tmp/flats.csv' DELIMITER ',' CSV HEADER" && cp /tmp/flats.csv ./
+psql -U postgres -d gethataby_development -c "COPY (SELECT id, price, rooms_number, updated_at, coords[0] as lat, coords[1] as lon, agent, address, created_at from flats) to '/tmp/flats.csv' DELIMITER ',' CSV HEADER" && cp /tmp/flats.csv ./
 ```
 
 ### Run streamlit server
