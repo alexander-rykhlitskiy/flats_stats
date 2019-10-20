@@ -24,6 +24,7 @@ def load_data(nrows):
     # Central Belarus borders
     data = data[(data.lat < 54.0) & (data.lat > 53.8) & (data.lon > 27.3) & (data.lon < 27.7)]
     data = data[(data.price < 2000) & (data.price > 50)]
+    data = data[(data.price < np.percentile(data.price, 95)) & (data.price > np.percentile(data.price, 5))]
 
     # data.groupby(by='address')['address'].size().sort_values().tail(2).index.values # >>> ['Минск', 'Минск, ']
     incomplete_addresses = "['Минск', 'Минск, ']"
@@ -41,9 +42,9 @@ filtered_data = data[data.rooms_number.isin(rooms_to_filter)]
 st.write(f'{len(filtered_data)} flats analyzed')
 
 st.subheader('Number of newly added for rent flats by hour')
-hist_values = np.histogram(
-    filtered_data[CREATED_AT_COLUMN].dt.hour, bins=24, range=(0,24))[0]
-st.bar_chart(hist_values)
+# hist_values = np.histogram(
+#     filtered_data[CREATED_AT_COLUMN].dt.hour, bins=24, range=(0,24))[0]
+# st.bar_chart(hist_values)
 
 minsk_map_options = {
     'latitude': 53.903589,
@@ -60,8 +61,8 @@ st.deck_gl_chart(viewport=minsk_map_options,
         'radius': 1000,
         'type': 'HexagonLayer',
         'opacity': 0.3,
-        'upperPercentile': 96,
-        'lowerPercentile': 4,
+        'upperPercentile': 97.5,
+        'lowerPercentile': 3,
     }])
 
 st.subheader('Number of flats by regions')
@@ -75,8 +76,8 @@ st.deck_gl_chart(viewport=minsk_map_options,
         'lowerPercentile': 4,
     }])
 
-st.subheader('Some analysis')
-st.write(filtered_data[['price', 'rooms_number', 'lat', 'lon']].describe())
+# st.subheader('Some analysis')
+# st.write(filtered_data[['price', 'rooms_number', 'lat', 'lon']].describe())
 
 # st.subheader('Raw data')
 # st.write(filtered_data)
