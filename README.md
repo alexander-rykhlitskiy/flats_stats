@@ -8,13 +8,18 @@ psql -U postgres -d gethataby_development -c "COPY (SELECT id, price, rooms_numb
 ### Run streamlit server
 ```bash
 docker build -t flats_stats .
-
 docker run -v $(pwd):/app -it --rm -p 8501:8501 flats_stats
 ```
 
 #### Run in "production"
 ```bash
+# rebuild container
+docker rm $(docker stop $(docker ps -a -q --filter ancestor=flats_stats --format="{{.ID}}"))
+docker build -t flats_stats .
 docker run -d --restart always -v $(pwd):/app -it -p 8501:8501 flats_stats
+
+# restart container
+docker restart $(docker ps -a -q --filter ancestor=flats_stats --format="{{.ID}}")
 ```
 Add to `.streamlit/config.toml`
 ```
