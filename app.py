@@ -20,7 +20,7 @@ def filter_by_user_input(data):
 
     include_agents = st.sidebar.checkbox('Включать объявления агентов')
     if not include_agents:
-        result = data.query("agent != 't'")
+        result = result.query("agent != 't'")
 
     st.sidebar.markdown('Обявления даны:')
     since_date = st.sidebar.date_input('С', value=min(data['created_at']))
